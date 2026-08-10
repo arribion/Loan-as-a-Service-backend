@@ -19,10 +19,10 @@ const cookieOptions = {
 
 // Validate email format
 const isValidEmail = (email) => /^\S+@\S+\.\S+$/.test(email);
+
 // Validate Kenyan phone (optional)
 const isValidPhone = (phone) =>
   /^\+?254\d{9}$|^0\d{9}$/.test(phone.replace(/\s/g, ""));
-
 
 // 1. Tenant Registration (with transaction)
 export const registerTenant = async (req, res) => {
@@ -32,13 +32,16 @@ export const registerTenant = async (req, res) => {
   if (!businessName || !fullName || !email || !password) {
     return res.status(400).json({ message: "Missing required fields" });
   }
+
   if (!isValidEmail(email)) {
     return res.status(400).json({ message: "Invalid email address" });
   }
+
   // Phone is optional, but if provided, validate it
   if (phone && !isValidPhone(phone)) {
     return res.status(400).json({ message: "Invalid phone number format" });
   }
+
   if (!["lite", "growth", "enterprise"].includes(plan)) {
     return res.status(400).json({ message: "Invalid plan" });
   }
@@ -48,8 +51,9 @@ export const registerTenant = async (req, res) => {
     const [existingUser] = await db
       .select()
       .from(users)
-      .where(eq(users.email_address, email))
+      .where(eq(users.emailAddress, email))
       .limit(1);
+
     if (existingUser) {
       return res.status(409).json({ message: "Email already registered" });
     }
@@ -59,11 +63,12 @@ export const registerTenant = async (req, res) => {
       // 1. Create tenant
       const [newTenant] = await trx
         .insert(tenants)
+        // FIXED: Using camelCase keys to match tenants schema properties
         .values({
-          business_name: businessName,
-          package_tier: plan,
-          configuration_payload: {},
-          is_active: true,
+          businessName: businessName,
+          packageTier: plan,
+          configurationPayload: {},
+          isActive: true,
         })
         .returning();
 
@@ -72,13 +77,13 @@ export const registerTenant = async (req, res) => {
       const [newAdmin] = await trx
         .insert(users)
         .values({
-          tenant_id: newTenant.id,
-          full_name: fullName,
-          email_address: email,
-          password_hash: hashedPassword,
-          phone_number: phone || null,
-          security_role: "admin",
-          tracking_status: "active",
+          tenantId: newTenant.id,
+          fullName: fullName,
+          emailAddress: email,
+          passwordHash: hashedPassword,
+          phoneNumber: phone || null,
+          securityRole: "admin",
+          trackingStatus: "active",
         })
         .returning();
 
@@ -102,8 +107,9 @@ export const registerTenant = async (req, res) => {
 
     return res.status(201).json({
       message: "Tenant registered successfully",
-      tenant: { id: result.tenant.id, name: result.tenant.business_name },
-      admin: { id: result.admin.id, email: result.admin.email_address },
+      // FIXED: using result.tenant.businessName
+      tenant: { id: result.tenant.id, name: result.tenant.businessName },
+      admin: { id: result.admin.id, email: result.admin.emailAddress },
     });
   } catch (error) {
     console.error("Registration error:", error);
@@ -111,11 +117,10 @@ export const registerTenant = async (req, res) => {
   }
 };
 
-
-
-//  User Login
+// User Login
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
+
   try {
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password required" });
@@ -124,14 +129,14 @@ export const loginUser = async (req, res) => {
     const [user] = await db
       .select()
       .from(users)
-      .where(eq(users.email_address, email))
+      .where(eq(users.emailAddress, email))
       .limit(1);
 
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password_hash);
+    const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -139,22 +144,23 @@ export const loginUser = async (req, res) => {
     const [tenant] = await db
       .select()
       .from(tenants)
-      .where(eq(tenants.id, user.tenant_id))
+      .where(eq(tenants.id, user.tenantId))
       .limit(1);
 
-    if (!tenant || !tenant.is_active) {
+    // FIXED: changed tenant.is_active to tenant.isActive
+    if (!tenant || !tenant.isActive) {
       return res
         .status(403)
         .json({ message: "Tenant is inactive or disabled" });
     }
 
     const access_token = jwt.sign(
-      { userId: user.id, tenantId: user.tenant_id, role: user.security_role },
+      { userId: user.id, tenantId: user.tenantId, role: user.securityRole },
       ACCESS_TOKEN_SECRET,
       { expiresIn: ACCESS_TOKEN_EXPIRES_IN },
     );
     const refresh_token = jwt.sign(
-      { userId: user.id, tenantId: user.tenant_id },
+      { userId: user.id, tenantId: user.tenantId },
       REFRESH_TOKEN_SECRET,
       { expiresIn: REFRESH_TOKEN_EXPIRES_IN },
     );
@@ -166,15 +172,16 @@ export const loginUser = async (req, res) => {
       message: "Login successful",
       user: {
         id: user.id,
-        fullName: user.full_name,
-        email: user.email_address,
-        role: user.security_role,
-        tenantId: user.tenant_id,
+        fullName: user.fullName,
+        email: user.emailAddress,
+        role: user.securityRole,
+        tenantId: user.tenantId,
       },
+      // FIXED: changed to use tenant.businessName and tenant.packageTier
       tenant: {
         id: tenant.id,
-        businessName: tenant.business_name,
-        packageTier: tenant.package_tier,
+        businessName: tenant.businessName,
+        packageTier: tenant.packageTier,
       },
     });
   } catch (error) {
@@ -183,9 +190,7 @@ export const loginUser = async (req, res) => {
   }
 };
 
-
-
-//  Get Current User (session restoration)
+// Get Current User (session restoration)
 export const getMe = async (req, res) => {
   try {
     const userId = req.user?.userId;
@@ -206,7 +211,7 @@ export const getMe = async (req, res) => {
     const [tenant] = await db
       .select()
       .from(tenants)
-      .where(eq(tenants.id, user.tenant_id))
+      .where(eq(tenants.id, user.tenantId))
       .limit(1);
 
     if (!tenant) {
@@ -216,16 +221,17 @@ export const getMe = async (req, res) => {
     return res.json({
       user: {
         id: user.id,
-        fullName: user.full_name,
-        email: user.email_address,
-        role: user.security_role,
-        tenantId: user.tenant_id,
+        fullName: user.fullName,
+        email: user.emailAddress,
+        role: user.securityRole,
+        tenantId: user.tenantId,
       },
+      // FIXED: changed to use tenant.businessName, packageTier, and isActive
       tenant: {
         id: tenant.id,
-        businessName: tenant.business_name,
-        packageTier: tenant.package_tier,
-        isActive: tenant.is_active,
+        businessName: tenant.businessName,
+        packageTier: tenant.packageTier,
+        isActive: tenant.isActive,
       },
     });
   } catch (error) {
@@ -234,9 +240,7 @@ export const getMe = async (req, res) => {
   }
 };
 
-
-
-//  Refresh Token
+// Refresh Token
 export const refreshToken = async (req, res) => {
   const token = req.cookies.refresh_token;
   if (!token) {
@@ -256,7 +260,7 @@ export const refreshToken = async (req, res) => {
     }
 
     const newAccessToken = jwt.sign(
-      { userId: user.id, tenantId: user.tenant_id, role: user.security_role },
+      { userId: user.id, tenantId: user.tenantId, role: user.securityRole },
       ACCESS_TOKEN_SECRET,
       { expiresIn: ACCESS_TOKEN_EXPIRES_IN },
     );
@@ -270,14 +274,12 @@ export const refreshToken = async (req, res) => {
   }
 };
 
-
-//  Logout
+// Logout
 export const logoutUser = (req, res) => {
   res.clearCookie("access_token", cookieOptions);
   res.clearCookie("refresh_token", cookieOptions);
   return res.status(200).json({ message: "Logged out successfully" });
 };
-
 
 export default {
   registerTenant,
