@@ -10,7 +10,7 @@ import {
   check,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import {tenants} from "./tenants.js";
+import { tenants } from "./tenants.js";
 
 export const interestCalculationTypeEnum = pgEnum("interest_calculation_type", [
   "flat",
@@ -24,7 +24,7 @@ export const loanProducts = pgTable(
     id: uuid("id").defaultRandom().primaryKey().notNull(),
     tenantId: uuid("tenant_id")
       .notNull()
-      .references(() => tenants.id, { onDelete: "cascade" }), // cascade deletes products when tenant is removed (optional)
+      .references(() => tenants.id, { onDelete: "cascade" }),
     referenceTitle: varchar("reference_title", { length: 120 }).notNull(),
     interestCalculationType: interestCalculationTypeEnum(
       "interest_calculation_type",
@@ -33,7 +33,7 @@ export const loanProducts = pgTable(
       .default("flat"),
     basePercentage: numeric("base_percentage", { precision: 6, scale: 4 })
       .notNull()
-      .default("1.0000"), // changed default to pass check
+      .default("1.0000"),
     fineRules: jsonb("fine_rules").default("{}").notNull(),
     minLoanAmount: numeric("min_loan_amount", { precision: 15, scale: 2 })
       .notNull()
@@ -42,10 +42,10 @@ export const loanProducts = pgTable(
       precision: 15,
       scale: 2,
     }).notNull(),
-    minTermDays: integer("min_term_days").notNull(), // changed from max_term_days
+    maxTermDays: integer("max_term_days").notNull(),
   },
   (table) => [
-    index("idx_lp_tenant").on(table.tenant_id),
+    index("idx_lp_tenant").on(table.tenantId),
     check("base_percentage_check", sql`${table.basePercentage} > 0`),
   ],
 );

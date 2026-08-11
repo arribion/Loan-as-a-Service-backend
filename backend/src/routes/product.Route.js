@@ -18,7 +18,7 @@ import {
 
 // Define the routes
 productRouter
-  .post("/:tenant_id/create", create_product)
+  .post("/:tenant_id/", create_product)
   .get("/:tenant_id/", get_all_products)
   .get("/:tenant_id/get/:id", get_product)
   .put("/:tenant_id/update/:id", update_product)

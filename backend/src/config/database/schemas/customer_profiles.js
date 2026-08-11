@@ -18,9 +18,7 @@ export const customerProfiles = pgTable(
       .notNull()
       .unique()
       .references(() => users.id, { onDelete: "cascade" }),
-    nationalIdentityNumber: text("national_identity_number")
-      .notNull()
-      .unique(), // no default
+    nationalIdentityNumber: text("national_identity_number").notNull().unique(),
     phoneNumber: text("phone_number").notNull(),
     encryptionKeyVector: text("encryption_key_vector").notNull(),
     creditScore: smallint("credit_score").default(0),
@@ -31,7 +29,7 @@ export const customerProfiles = pgTable(
     }),
   },
   (table) => [
-    index("idx_cust_user").on(table.user_id),
+    index("idx_cust_user").on(table.userId),
     check("credit_score_check", sql`${table.creditScore} BETWEEN 0 AND 1000`),
   ],
 );
