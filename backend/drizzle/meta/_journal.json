@@ -8,6 +8,13 @@
       "when": 1786471266509,
       "tag": "0000_free_katie_power",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1786473065815,
+      "tag": "0001_orange_colonel_america",
+      "breakpoints": true
     }
   ]
 }

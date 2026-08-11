@@ -1,0 +1,1 @@
+ALTER TABLE "loan_products" RENAME COLUMN "max_term_days" TO "min_term_days";

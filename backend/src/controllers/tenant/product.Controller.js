@@ -3,7 +3,7 @@ import { loanProducts } from "../../config/database/schemas/index.js";
 import { and, eq } from "drizzle-orm";
 import sampleProduct from "../../../store/loan.Product.js";
 
-// ✅ CREATE - expects tenant_id in URL, all fields in body
+// CREATE
 export const create_product = async (req, res) => {
   const { tenant_id } = req.params;
   const {
@@ -13,11 +13,10 @@ export const create_product = async (req, res) => {
     fine_rules,
     min_loan_amount,
     max_loan_amount,
-    max_term_days, // matches frontend
+    max_term_days, // from frontend
   } = req.body;
 
   try {
-    // validate presence
     if (
       !tenant_id ||
       !reference_title ||
@@ -33,7 +32,7 @@ export const create_product = async (req, res) => {
       });
     }
 
-    // Build object with column names that match the schema (snake_case)
+    // Map frontend field to the actual database column
     const newProduct = {
       tenant_id,
       reference_title,
@@ -42,7 +41,7 @@ export const create_product = async (req, res) => {
       fine_rules,
       min_loan_amount,
       max_loan_amount,
-      max_term_days, // now this column exists in the schema
+      min_term_days: max_term_days, // <-- KEY FIX
     };
 
     const createdProduct = await db
@@ -65,7 +64,7 @@ export const create_product = async (req, res) => {
   }
 };
 
-// ✅ GET ONE - unchanged (uses id)
+// GET ONE (unchanged)
 export const get_product = async (req, res) => {
   const { id } = req.params;
   try {
@@ -76,7 +75,6 @@ export const get_product = async (req, res) => {
 
     const product = results[0];
     if (!product) {
-      // fallback to sample data
       if (!sampleProduct || sampleProduct.length === 0) {
         return res.status(404).json({
           success: false,
@@ -91,7 +89,7 @@ export const get_product = async (req, res) => {
         fine_rules: prod.fine_rules,
         min_loan_amount: prod.min_loan_amount,
         max_loan_amount: prod.max_loan_amount,
-        max_term_days: prod.max_term_days, // updated field name
+        max_term_days: prod.max_term_days, // keep as sent to frontend
       }));
       return res.status(200).json(sample_product);
     }
@@ -109,7 +107,7 @@ export const get_product = async (req, res) => {
   }
 };
 
-// ✅ GET ALL - tenant_id in URL
+// GET ALL (unchanged)
 export const get_all_products = async (req, res) => {
   const { tenant_id } = req.params;
   try {
@@ -130,7 +128,7 @@ export const get_all_products = async (req, res) => {
   }
 };
 
-// ✅ UPDATE - tenant_id and id in URL, body contains fields to update
+// UPDATE
 export const update_product = async (req, res) => {
   const { id, tenant_id } = req.params;
   const {
@@ -165,7 +163,7 @@ export const update_product = async (req, res) => {
         fine_rules,
         min_loan_amount,
         max_loan_amount,
-        max_term_days,
+        min_term_days: max_term_days, // <-- KEY FIX for update
       })
       .where(
         and(eq(loanProducts.id, id), eq(loanProducts.tenant_id, tenant_id)),
@@ -185,7 +183,7 @@ export const update_product = async (req, res) => {
   }
 };
 
-// ✅ DELETE
+// DELETE (unchanged)
 export const delete_product = async (req, res) => {
   const { id, tenant_id } = req.params;
   try {
