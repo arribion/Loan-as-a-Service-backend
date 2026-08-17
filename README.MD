@@ -22,7 +22,7 @@ Host Pro Limited is commissioning the design, architecture, and implementation o
 - **Core Goal:** Provide a **multi‑tenant, tier‑enforced loan lifecycle platform** for microfinance, SACCOs, and institutional lenders.
 - **Interfaces:**
   - **Backend API Service** — centralized, high‑throughput, stateless microservices.
-  - **Admin Dashboard (Web)** — for providers, loan officers, and compliance staff.
+  - **Admin Dashboard (Web)** — this is for providers, loan officers, and compliance staff.
   - **Borrower Mobile Client** — lightweight, native‑feeling app for loan applications, repayments, and notifications.
 
 ---
