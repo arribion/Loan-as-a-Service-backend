@@ -120,3 +120,117 @@ Example:
 - **Resilience**: Circuit breakers, retries, idempotency checks.
 
 ---
+
+# frontend laas
+
+- postman test
+
+- LITE PLAN USER SAMPLE
+
+```bash
+{
+  "businessName": "Tumaini SACCO",
+  "fullName": "Jane Muthoni",
+  "email": "admin@tumaini.co.ke",
+  "phone": "0712345678",
+  "password": "SecurePass123!",
+  "plan": "lite"
+}
+```
+
+- GROWTH PLAN
+
+```bash
+{
+  "businessName": "PesaTech FinTech",
+  "fullName": "Peter Ochieng",
+  "email": "peter@pesatech.com",
+  "phone": "0722334455",
+  "password": "Growth@2026",
+  "plan": "growth"
+}
+```
+
+- ENTERPRISE
+
+```bash
+{
+  "businessName": "Equity Microfinance Bank",
+  "fullName": "Grace Wanjiru",
+  "email": "grace@equitymicro.com",
+  "phone": "0733445566",
+  "password": "Enterprise#Secure",
+  "plan": "enterprise"
+}
+```
+
+## sample loan products
+
+```bash
+[
+  {
+    "reference_title": "School Fee Loan",
+    "interest_calculation_type": "flat",
+    "base_percentage": "12.5000",
+    "fine_rules": {},
+    "min_loan_amount": "500.00",
+    "max_loan_amount": "25000.00",
+    "max_term_days": 180
+  },
+  {
+    "reference_title": "Business Expansion Loan",
+    "interest_calculation_type": "reducing_balance",
+    "base_percentage": "9.7500",
+    "fine_rules": {
+      "grace_days": 5,
+      "daily_penalty_rate": 0.015
+    },
+    "min_loan_amount": "5000.00",
+    "max_loan_amount": "100000.00",
+    "max_term_days": 365
+  },
+  {
+    "reference_title": "Home Improvement Loan",
+    "interest_calculation_type": "flat",
+    "base_percentage": "11.2500",
+    "fine_rules": {
+      "grace_days": 3,
+      "daily_penalty_rate": 0.02,
+      "max_penalty_cap": 500.00
+    },
+    "min_loan_amount": "2000.00",
+    "max_loan_amount": "75000.00",
+    "max_term_days": 240
+  },
+  {
+    "reference_title": "Car Loan",
+    "interest_calculation_type": "reducing_balance",
+    "base_percentage": "8.5000",
+    "fine_rules": {},
+    "min_loan_amount": "10000.00",
+    "max_loan_amount": "500000.00",
+    "max_term_days": 720
+  },
+  {
+    "reference_title": "Personal Loan",
+    "interest_calculation_type": "compound",
+    "base_percentage": "10.0000",
+    "fine_rules": {
+      "grace_days": 7,
+      "daily_penalty_rate": 0.01
+    },
+    "min_loan_amount": "1000.00",
+    "max_loan_amount": "30000.00",
+    "max_term_days": 120
+  },
+  {
+    "reference_title": "Emergency Loan",
+    "interest_calculation_type": "flat",
+    "base_percentage": "15.0000",
+    "fine_rules": {},
+    "min_loan_amount": "200.00",
+    "max_loan_amount": "5000.00",
+    "max_term_days": 90
+  }
+]
+```
