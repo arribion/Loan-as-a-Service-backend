@@ -6,9 +6,11 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
+
 import { AuthProvider } from "./context/AuthContext";
 import useAuth from "./hooks/useAuth";
 import { ToastProvider } from "./components/ui/Toaster";
+
 import ProtectedRoute from "./pages/ProtectedRoute";
 import Landing from "./pages/Landing";
 import Login from "./pages/auth/Login";
