@@ -126,7 +126,7 @@ const ApplyLoanCard = ({ tenantId, productId }: ApplyLoanCardProps) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 p-6 max-w-md mx-auto">
+    <div className="bg-white rounded shadow-xl overflow-hidden border border-gray-100 p-2">
       {/* Header */}
       <div className="mb-6">
         <span className="px-2.5 py-1 bg-blue-50 text-blue-600 text-xs font-semibold rounded-full uppercase tracking-wider inline-block">

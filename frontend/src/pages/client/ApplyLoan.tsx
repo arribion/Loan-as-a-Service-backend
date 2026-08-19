@@ -109,7 +109,7 @@ const ApplyLoan = () => {
 
       {/* Dynamic Render Product Grid Grid */}
       {!loading && !error && products.length > 0 && (
-        <article className="grid gap-6 grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
+        <article className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(250px,1fr))]">
           {products.map((product) => (
             <ApplyLoanCard
               key={product.id || product.reference_title}
